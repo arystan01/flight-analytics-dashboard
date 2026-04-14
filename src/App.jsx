@@ -9,6 +9,7 @@ import TimingPage from './pages/TimingPage'
 
 export default function App() {
   const [data, setData] = useState(null)
+  const [fetchError, setFetchError] = useState(null)
   const [page, setPage] = useState('overview')
   const [showTop, setShowTop] = useState(false)
   const [dark, setDark] = useState(() => localStorage.getItem('dark') === '1')
@@ -26,13 +27,30 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    fetch(import.meta.env.BASE_URL + 'data.json').then(r => r.json()).then(setData)
+    const url = import.meta.env.BASE_URL + 'data.json'
+    fetch(url)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status} fetching ${url}`)
+        return r.json()
+      })
+      .then(setData)
+      .catch(err => setFetchError(err.message))
   }, [])
 
   // Scroll to top on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [page])
+
+  if (fetchError) {
+    return (
+      <div className="loading">
+        <span style={{ color: '#dc2626', fontSize: 14, textAlign: 'center', maxWidth: 400 }}>
+          ⚠️ Failed to load data: {fetchError}
+        </span>
+      </div>
+    )
+  }
 
   if (!data) {
     return (
