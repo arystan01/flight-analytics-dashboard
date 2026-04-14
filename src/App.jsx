@@ -26,7 +26,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    fetch('/data.json').then(r => r.json()).then(setData)
+    fetch(import.meta.env.BASE_URL + 'data.json').then(r => r.json()).then(setData)
   }, [])
 
   // Scroll to top on page change
